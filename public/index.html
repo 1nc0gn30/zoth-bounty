@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zoth Bounty — Security Research, Disclosure & Communications Tracker</title>
+  <meta name="description" content="Zoth Bounty local command center tracking Ongoing, Pending, Completed, and Possible security research findings alongside Thunderbird and GitHub Advisory communications." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --panel: #12161b;
+      --panel-alt: #171c23;
+      --border: #252d38;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #3fb950;
+      --pending: #d29922;
+      --ongoing: #58a6ff;
+      --completed: #3fb950;
+      --possible: #a371f7;
+      --danger: #f85149;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.55;
+      padding-bottom: 60px;
+      overflow-x: hidden;
+    }
+    header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--panel-alt);
+      color: var(--muted);
+      word-break: break-word;
+      max-width: 100%;
+    }
+    .thermal-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+    }
+    .thermal-pill {
+      padding: 5px 10px;
+      border-radius: 6px;
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .stat-card:hover, .stat-card.active {
+      border-color: var(--ongoing);
+    }
+    .stat-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .stat-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tab-btn {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #1f2937;
+      border-color: var(--ongoing);
+      color: #fff;
+    }
+    .action-btn {
+      background: #238636;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .action-btn.secondary {
+      background: var(--panel-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 20px;
+    }
+    @media (max-width: 1024px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .bounty-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .bounty-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .cat-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    .cat-pending { background: rgba(210, 153, 34, 0.16); color: #e3b341; border: 1px solid rgba(210, 153, 34, 0.4); }
+    .cat-ongoing { background: rgba(88, 166, 255, 0.16); color: #58a6ff; border: 1px solid rgba(88, 166, 255, 0.4); }
+    .cat-completed { background: rgba(63, 185, 80, 0.16); color: #3fb950; border: 1px solid rgba(63, 185, 80, 0.4); }
+    .cat-possible { background: rgba(163, 113, 247, 0.16); color: #bc8cff; border: 1px solid rgba(163, 113, 247, 0.4); }
+
+    .bounty-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.08rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .meta-chip {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      word-break: break-word;
+      max-width: 100%;
+    }
+    .section-box {
+      background: var(--panel-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-size: 0.86rem;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      overflow-x: auto;
+    }
+    .section-box strong {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .card-footer {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+    .move-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .mini-btn {
+      background: var(--panel-alt);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      cursor: pointer;
+    }
+    .mini-btn:hover {
+      color: #fff;
+      border-color: var(--ongoing);
+    }
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .panel-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .panel-box h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .comm-item {
+      border-top: 1px solid var(--border);
+      padding: 10px 0;
+      font-size: 0.83rem;
+    }
+    .comm-item:first-of-type { border-top: none; }
+    .comm-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .comm-subj {
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .comm-status {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.71rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    select, input, textarea {
+      width: 100%;
+      background: var(--bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.84rem;
+      margin-bottom: 8px;
+      font-family: inherit;
+    }
+    pre.scan-out {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      max-height: 220px;
+      overflow: auto;
+      white-space: pre-wrap;
+      color: #c9d1d9;
+      margin-top: 8px;
+    }
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      max-width: 580px;
+      width: 100%;
+      padding: 20px;
+    }
+    .modal h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      margin-bottom: 12px;
+    }
+
+    html[data-theme="light"] {
+      --bg: #F8F6F0;
+      --panel: #FFFFFF;
+      --panel-alt: #F3F0E6;
+      --border: #D5CFC2;
+      --text: #111827;
+      --muted: #4B5563;
+      --accent: #047857;
+      --pending: #B45309;
+      --ongoing: #0369A1;
+      --completed: #047857;
+      --possible: #6D28D9;
+      --danger: #DC2626;
+    }
+    html[data-theme="light"] body {
+      background: #F8F6F0 !important;
+      color: #111827 !important;
+    }
+    html[data-theme="light"] .tab-btn.active {
+      background: #0369A1 !important;
+      color: #FFFFFF !important;
+      border-color: #0369A1 !important;
+    }
+    html[data-theme="light"] #count-comms {
+      color: #111827 !important;
+    }
+    html[data-theme="light"] pre.scan-out {
+      background: #0F172A !important;
+      color: #E2E8F0 !important;
+      border-color: #334155 !important;
+    }
+    @media (max-width: 640px) {
+      .stats-grid, .layout-grid { grid-template-columns: minmax(0, 1fr) !important; }
+      header, .container { padding-left: 12px !important; padding-right: 12px !important; }
+    }
+  </style>
+  <script>
+    function toggleLightDarkTheme() {
+      const root = document.documentElement;
+      const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      root.setAttribute('data-theme', next);
+      const btn = document.getElementById('themeToggleBtn');
+      if (btn) btn.textContent = next === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
+    }
+  </script>
+</head>
+<body>
+
+<div id="zoth-coffee-support-bar" style="background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(212,175,55,0.14)); border-bottom: 1px solid rgba(212,175,55,0.35); padding: 8px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; z-index: 9999;">
+  <span style="color: #10B981; font-weight: 800;">✦ 100% FREE &amp; OPEN ACCESS · ZERO PAYWALLS</span>
+  <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">☕ Buy Us a Coffee (Stripe)</a>
+  <a href="solana:GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK" onclick="if(navigator.clipboard){navigator.clipboard.writeText('GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK');this.textContent='✓ Copied GG2eQb...dXoK!';}" style="background: rgba(20,241,149,0.15); color: #14F195; border: 1px solid rgba(20,241,149,0.45); padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">◎ Solana Tip (GG2e...dXoK)</a>
+</div>
+
+  <header>
+    <div class="brand">
+      <h1>ZOTH BOUNTY</h1>
+      <span class="badge">ZERO-FALSE-POSITIVE WORKSPACE</span>
+      <span class="badge">HEXSTRIKE + KALI/PARROT ARSENAL</span>
+    </div>
+    <div class="thermal-bar">
+      <button id="themeToggleBtn" type="button" class="mini-btn" onclick="toggleLightDarkTheme()">
+        ☀️ Light Mode
+      </button>
+      <div class="thermal-pill">
+        <span class="dot" id="thermalDot"></span>
+        <span id="thermalTemp">CPU: --°C</span>
+      </div>
+      <div class="thermal-pill" id="thermalFan">Fan: -- RPM</div>
+      <div class="thermal-pill" id="thermalLoad">Load: --</div>
+      <div class="thermal-pill" id="thermalStatus">COOL MODE</div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card" onclick="setFilter('pending')" id="card-pending">
+        <div class="stat-label">Pending (Disclosed)</div>
+        <div class="stat-value" id="count-pending" style="color: var(--pending)">0</div>
+        <div class="stat-sub">Submitted via GHSA / Security Email</div>
+      </div>
+      <div class="stat-card" onclick="setFilter('ongoing')" id="card-ongoing">
+        <div class="stat-label">Ongoing Audits</div>
+        <div class="stat-value" id="count-ongoing" style="color: var(--ongoing)">0</div>
+        <div class="stat-sub">Active Low-CPU Static Queue</div>
+      </div>
+      <div class="stat-card" onclick="setFilter('completed')" id="card-completed">
+        <div class="stat-label">Completed / Cleared</div>
+        <div class="stat-value" id="count-completed" style="color: var(--completed)">0</div>
+        <div class="stat-sub">Verified & Hardened Targets</div>
+      </div>
+      <div class="stat-card" onclick="setFilter('possible')" id="card-possible">
+        <div class="stat-label">Possible (Not Sure)</div>
+        <div class="stat-value" id="count-possible" style="color: var(--possible)">0</div>
+        <div class="stat-sub">Held Back by Skepticism Filter</div>
+      </div>
+      <div class="stat-card" onclick="setFilter('comms')" id="card-comms">
+        <div class="stat-label">Communications</div>
+        <div class="stat-value" id="count-comms" style="color: #e6edf3">0</div>
+        <div class="stat-sub">Thunderbird + GHSA + Boardy</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="tabs">
+        <button class="tab-btn active" onclick="setFilter('all')" id="tab-all">All Categories</button>
+        <button class="tab-btn" onclick="setFilter('pending')" id="tab-pending">Pending (Disclosed)</button>
+        <button class="tab-btn" onclick="setFilter('ongoing')" id="tab-ongoing">Ongoing</button>
+        <button class="tab-btn" onclick="setFilter('completed')" id="tab-completed">Completed</button>
+        <button class="tab-btn" onclick="setFilter('possible')" id="tab-possible">Possible / Not Sure</button>
+        <button class="tab-btn" onclick="setFilter('comms')" id="tab-comms">Communications Log</button>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="action-btn secondary" onclick="openModal('commModal')">+ Log Communication</button>
+        <button class="action-btn" onclick="openModal('bountyModal')">+ Add Finding / Target</button>
+      </div>
+    </div>
+
+    <div class="layout-grid">
+      <div>
+        <div class="card-list" id="mainList"></div>
+      </div>
+
+      <div class="side-panel">
+        <div class="panel-box">
+          <h2>
+            <span>Cool-Mode Static Scanner</span>
+            <span class="badge">nice -n 19</span>
+          </h2>
+          <p style="font-size:0.8rem; color:var(--muted); margin-bottom:10px;">
+            Runs HexStrike + Kali/Parrot static sink detection on cloned repos only when CPU &lt; 68°C.
+          </p>
+          <select id="repoSelect"></select>
+          <button class="action-btn" style="width:100%" onclick="runRepoScan()">Run Low-CPU Static Audit</button>
+          <pre class="scan-out" id="scanOutput">Select a cloned repository above to run a cool-mode static sink check.</pre>
+        </div>
+
+        <div class="panel-box">
+          <h2>
+            <span>Recent Communications</span>
+            <span class="badge">LIVE SYNC</span>
+          </h2>
+          <div id="sideComms"></div>
+        </div>
+
+        <div class="panel-box">
+          <h2>
+            <span>Thunderbird Inbox Feed</span>
+            <span class="badge">business@nullai.tech</span>
+          </h2>
+          <div id="tbFeed"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Finding Modal -->
+  <div class="modal-backdrop" id="bountyModal">
+    <div class="modal">
+      <h3>Add Security Finding or Audit Target</h3>
+      <select id="bCategory">
+        <option value="ongoing">Ongoing (Active Audit)</option>
+        <option value="possible">Possible / Not Sure (Hold Back for Review)</option>
+        <option value="pending">Pending (Disclosed / Awaiting Triage)</option>
+        <option value="completed">Completed (Verified / Hardened)</option>
+      </select>
+      <input id="bTitle" placeholder="Finding Title (e.g. Symlink File Disclosure in copyDir)" />
+      <input id="bTarget" placeholder="Target Repository (e.g. vercel-labs/skills)" />
+      <input id="bSeverity" placeholder="Severity & CVSS (e.g. High CVSS 7.5)" />
+      <input id="bCwe" placeholder="CWE (e.g. CWE-59)" />
+      <input id="bFiles" placeholder="Affected Files (comma-separated, e.g. src/installer.ts:542-563)" />
+      <textarea id="bSummary" rows="3" placeholder="Technical Root Cause Summary..."></textarea>
+      <textarea id="bWhySolid" rows="2" placeholder="Triager Gate Note: Why is this 100% solid (or why is it held in Possible)?"></textarea>
+      <textarea id="bRemediation" rows="2" placeholder="Defensive Patch / Remediation..."></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button class="action-btn secondary" onclick="closeModal('bountyModal')">Cancel</button>
+        <button class="action-btn" onclick="submitBounty()">Save & Sync Docs</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Communication Modal -->
+  <div class="modal-backdrop" id="commModal">
+    <div class="modal">
+      <h3>Log Communication / Disclosure Update</h3>
+      <select id="cDirection">
+        <option value="OUTBOUND">OUTBOUND (Sent by Us)</option>
+        <option value="INBOUND">INBOUND (Received Reply)</option>
+      </select>
+      <input id="cChannel" placeholder="Channel (e.g. Thunderbird Email / GitHub GHSA)" />
+      <input id="cRecipient" placeholder="Recipient / Counterparty (e.g. security@stytch.com)" />
+      <input id="cSubject" placeholder="Subject Line" />
+      <input id="cStatus" placeholder="Status (e.g. DELIVERED / ACKNOWLEDGED)" />
+      <input id="cBountyId" placeholder="Related Bounty ID (e.g. ZB-2026-001)" />
+      <textarea id="cSummary" rows="3" placeholder="Communication summary or message excerpt..."></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+        <button class="action-btn secondary" onclick="closeModal('commModal')">Cancel</button>
+        <button class="action-btn" onclick="submitComm()">Save Communication</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let STATE = { bounties: { items: [] }, communications: { logs: [] }, thermals: {}, clonedRepos: [], thunderbirdRecent: [] };
+    let CURRENT_FILTER = 'all';
+
+    function esc(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function loadState() {
+      const res = await fetch('/api/state');
+      STATE = await res.json();
+      render();
+    }
+
+    function setFilter(f) {
+      CURRENT_FILTER = f;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.getElementById('tab-' + f);
+      if (btn) btn.classList.add('active');
+      render();
+    }
+
+    async function moveItem(id, category) {
+      await fetch('/api/bounties/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, category })
+      });
+      await loadState();
+    }
+
+    async function runRepoScan() {
+      const repo = document.getElementById('repoSelect').value;
+      const out = document.getElementById('scanOutput');
+      out.textContent = 'Running low-CPU static audit (nice -n 19) on ' + repo + '...';
+      const res = await fetch('/api/scan-repo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ repo })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        out.textContent = 'BLOCKED: ' + data.reason;
+      } else {
+        out.textContent = `[Repo: ${data.repo} | Temp: ${data.thermalsAtScan} | Hits: ${data.hitCount}]\n\n` +
+          (data.hits.length ? data.hits.join('\n') : '0 unguarded sink patterns triggered — repository clean on initial static pass.');
+      }
+      await loadState();
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+    async function submitBounty() {
+      const payload = {
+        category: document.getElementById('bCategory').value,
+        title: document.getElementById('bTitle').value,
+        target: document.getElementById('bTarget').value,
+        severity: document.getElementById('bSeverity').value,
+        cwe: document.getElementById('bCwe').value,
+        files: document.getElementById('bFiles').value,
+        summary: document.getElementById('bSummary').value,
+        whySolid: document.getElementById('bWhySolid').value,
+        remediation: document.getElementById('bRemediation').value
+      };
+      await fetch('/api/bounties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      closeModal('bountyModal');
+      await loadState();
+    }
+
+    async function submitComm() {
+      const payload = {
+        direction: document.getElementById('cDirection').value,
+        channel: document.getElementById('cChannel').value,
+        recipient: document.getElementById('cRecipient').value,
+        subject: document.getElementById('cSubject').value,
+        status: document.getElementById('cStatus').value,
+        relatedBountyId: document.getElementById('cBountyId').value,
+        summary: document.getElementById('cSummary').value
+      };
+      await fetch('/api/communications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      closeModal('commModal');
+      await loadState();
+    }
+
+    function render() {
+      const items = (STATE.bounties && STATE.bounties.items) || [];
+      const comms = (STATE.communications && STATE.communications.logs) || [];
+      const t = STATE.thermals || {};
+
+      document.getElementById('thermalTemp').textContent = `CPU: ${t.cpuTempC || 46}°C`;
+      document.getElementById('thermalFan').textContent = `Fan: ${t.fanRpm || 2500} RPM`;
+      document.getElementById('thermalLoad').textContent = `Load: ${(t.loadAvg || [0,0,0]).join(', ')}`;
+      document.getElementById('thermalStatus').textContent = t.status || 'COOL (OPTIMAL)';
+
+      const countBy = c => items.filter(i => i.category === c).length;
+      document.getElementById('count-pending').textContent = countBy('pending');
+      document.getElementById('count-ongoing').textContent = countBy('ongoing');
+      document.getElementById('count-completed').textContent = countBy('completed');
+      document.getElementById('count-possible').textContent = countBy('possible');
+      document.getElementById('count-comms').textContent = comms.length;
+
+      const repoSel = document.getElementById('repoSelect');
+      if (repoSel.options.length === 0 && STATE.clonedRepos) {
+        repoSel.innerHTML = STATE.clonedRepos.map(r => `<option value="${esc(r)}">${esc(r)}</option>`).join('');
+      }
+
+      const mainList = document.getElementById('mainList');
+      if (CURRENT_FILTER === 'comms') {
+        mainList.innerHTML = comms.map(c => `
+          <div class="bounty-card">
+            <div class="bounty-header">
+              <span class="cat-tag ${c.direction === 'OUTBOUND' ? 'cat-ongoing' : 'cat-completed'}">${esc(c.direction)} · ${esc(c.id)}</span>
+              <span class="badge">${esc(c.timestamp)}</span>
+            </div>
+            <div class="bounty-title">${esc(c.subject)}</div>
+            <div class="meta-row">
+              <span class="meta-chip">Channel: ${esc(c.channel)}</span>
+              <span class="meta-chip">Counterparty: ${esc(c.recipient)}</span>
+              <span class="meta-chip">Status: ${esc(c.status)}</span>
+              ${c.relatedBountyId ? `<span class="meta-chip">Bounty: ${esc(c.relatedBountyId)}</span>` : ''}
+            </div>
+            <div class="section-box">
+              <strong>Communication Details & Reference (${esc(c.referenceId)})</strong>
+              ${esc(c.summary)}
+            </div>
+          </div>
+        `).join('');
+      } else {
+        const filtered = CURRENT_FILTER === 'all' ? items : items.filter(i => i.category === CURRENT_FILTER);
+        mainList.innerHTML = filtered.map(item => `
+          <div class="bounty-card" style="max-width:100%; overflow-x:hidden;">
+            <div class="bounty-header">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <span class="cat-tag cat-${esc(item.category)}">${esc(item.category)}</span>
+                <span class="badge">${esc(item.id)}</span>
+                <span class="badge" style="word-break:break-all;">${esc(item.target)}</span>
+              </div>
+              <span class="badge">${esc(item.severity)} · ${esc(item.cwe)}</span>
+            </div>
+            <div class="bounty-title">${esc(item.title)}</div>
+            <div class="meta-row">
+              <span class="meta-chip">Program: ${esc(item.program)}</span>
+              <span class="meta-chip">Gate: ${esc(item.confidence)}</span>
+              ${(item.files || []).map(f => `<span class="meta-chip">${esc(f)}</span>`).join('')}
+            </div>
+            <div class="section-box">
+              <strong>Technical Root Cause & Code Analysis</strong>
+              ${esc(item.summary)}
+            </div>
+            <div class="section-box">
+              <strong>Triager Skepticism Verification (Why Worth Sharing / Or Why Held Back)</strong>
+              ${esc(item.whySolid)}
+            </div>
+            <div class="section-box">
+              <strong>Defensive Remediation Patch</strong>
+              ${esc(item.remediation)}
+            </div>
+            <div class="card-footer">
+              <span style="color:var(--muted); font-family:'JetBrains Mono',monospace;">Disclosure: ${esc(item.disclosedVia)}</span>
+              <div class="move-group">
+                <span style="color:var(--muted);">Move to:</span>
+                <button class="mini-btn" onclick="moveItem('${esc(item.id)}','ongoing')">Ongoing</button>
+                <button class="mini-btn" onclick="moveItem('${esc(item.id)}','pending')">Pending</button>
+                <button class="mini-btn" onclick="moveItem('${esc(item.id)}','completed')">Completed</button>
+                <button class="mini-btn" onclick="moveItem('${esc(item.id)}','possible')">Possible</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('sideComms').innerHTML = comms.slice(0, 5).map(c => `
+        <div class="comm-item">
+          <div class="comm-meta">${esc(c.direction)} · ${esc(c.recipient)}</div>
+          <div class="comm-subj">${esc(c.subject)}</div>
+          <div class="comm-status">${esc(c.status)}</div>
+          <div style="color:var(--muted); font-size:0.78rem;">${esc(c.summary)}</div>
+        </div>
+      `).join('');
+
+      const tb = STATE.thunderbirdRecent || [];
+      document.getElementById('tbFeed').innerHTML = tb.slice(0, 6).map(m => `
+        <div class="comm-item">
+          <div class="comm-meta">${esc(m.date)} · ${esc(m.from)}</div>
+          <div class="comm-subj">${esc(m.subject)}</div>
+        </div>
+      `).join('') || '<div style="color:var(--muted); font-size:0.8rem;">No matching Thunderbird rows.</div>';
+    }
+
+    loadState();
+    setInterval(loadState, 30000);
+  </script>
+  <script src="/assets/sovereign-upgrade.js" defer></script>
+</body>
+</html>
