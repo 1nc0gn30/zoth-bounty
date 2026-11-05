@@ -788,6 +788,22 @@
     loadState();
     setInterval(loadState, 30000);
   </script>
-  <script src="/assets/sovereign-upgrade.js" defer></script>
+  
+
+  <script src="/sovereign_tutorial.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function() {
+      if (window.createSovereignTutorial) {
+        window.createSovereignTutorial({
+          toolId: "zoth-bounty",
+          toolName: "Zoth Bounty Research Hub",
+          tagline: "Collaborative research terminal and sovereign bug bounty intelligence hub!",
+          accentColor: "#F59E0B",
+          steps: [{"icon": "\ud83c\udfc6", "title": "Find Bug Bounties", "desc": "Search active security bounties and research rewards across open-source and Web3 ecosystems."}, {"icon": "\ud83d\udccb", "title": "Vulnerability Proof-of-Concept", "desc": "Draft responsible disclosure reports with automated CVSS severity score calculators."}, {"icon": "\ud83d\udcb0", "title": "Track Payouts & Stats", "desc": "Manage your submitted findings and earned rewards in one clean, sovereign dashboard."}]
+        });
+      }
+    });
+  </script>
+
 </body>
 </html>
