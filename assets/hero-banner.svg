@@ -29,7 +29,7 @@
     <rect x="0" y="-14" width="420" height="22" rx="11" fill="rgba(255,255,255,0.06)" stroke="#EF4444" stroke-opacity="0.45"/>
     <text x="12" y="1" fill="#EF4444" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" letter-spacing="1.1">SHIELD // ZERO-TRUST ENCLAVE // PORT :9494</text>
     <text x="0" y="34" fill="#FFFFFF" font-family="Syne, Space Grotesk, sans-serif" font-size="30" font-weight="800" letter-spacing="0.4">ZOTH BOUNTY RESEARCH HUB</text>
-    <text x="0" y="60" fill="#94A3B8" font-family="Inter, sans-serif" font-size="13.5">Zero-false-positive security research &amp; responsible disclosure workspace with loopback command center on :9494.</text>
+    <text x="0" y="60" fill="#94A3B8" font-family="Inter, sans-serif" font-size="13.5">Zero-false-positive security research and responsible disclosure workspace on port :9494.</text>
   </g>
 
   <!-- 3 Feature Cards -->
