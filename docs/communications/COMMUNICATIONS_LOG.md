@@ -1,7 +1,7 @@
 # Zoth Bounty — Communications & Disclosure Log
 
 - **Last Synced**: 2026-10-21T06:45:38.239Z
-- **Thunderbird Inbox**: `business@nullai.tech (Titan IMAP / Thunderbird hjl6lky3.default-release)`
+- **Thunderbird Inbox**: `business@nullai.tech (Titan IMAP / Thunderbird)`
 - **Outbound DKIM/SPF Rail**: `1nc0gn30@outreach.nullai.tech / contact@nullai.tech (Resend DKIM/SPF)`
 - **Gmail Account**: `1nc0gn30solutions@gmail.com`
 - **GitHub Account**: `1nc0gn30 (GitHub Private Vulnerability Reporting / GHSA)`

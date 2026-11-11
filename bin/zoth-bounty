@@ -17,7 +17,8 @@ TOOL_VERSION = "1.0.0"
 TOOL_CATEGORY = "Security & Enclave"
 TOOL_PORT = 9494
 STUDIO_PORT = 3000
-REPO_DIR = "/opt/zoth-bounty"
+_SCRIPT_REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+REPO_DIR = _SCRIPT_REPO if os.path.exists(os.path.join(_SCRIPT_REPO, "server.js")) else "/opt/zoth-bounty"
 STUDIO_URL = f"http://127.0.0.1:{STUDIO_PORT}/tools/{TOOL_ID}"
 LOCAL_PORT_URL = f"http://127.0.0.1:{TOOL_PORT}"
 
@@ -107,8 +108,7 @@ def main():
         "daemon_status": daemon_health or {"status": "inactive"},
         "license": "100% Free & Open Access (Zero Paywalls)",
         "support": {
-            "stripe_buy_coffee": "https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X",
-            "solana_wallet": "GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK"
+            "stripe_buy_coffee": "https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X"
         }
     }
 
@@ -126,7 +126,7 @@ def main():
     print(f"  Repository : {REPO_DIR}")
     print(f"  Daemon     : {daemon_tag} at {LOCAL_PORT_URL}")
     print(f"  Workbench  : {STUDIO_URL}")
-    print(f"  Access     : 100% Free & Open Access (☕ https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X | ◎ GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK)")
+    print(f"  Access     : 100% Free & Open Access (https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X)")
 
 if __name__ == "__main__":
     main()

@@ -1,12 +1,13 @@
-
+node_modules/
+.pytest_cache/
+.netlify/
+__pycache__/
+*.py[cod]
 .venv/
 .venv*/
 venv/
-node_modules/
-__pycache__/
 *.pth
 *.onnx
-data/minds/spool.jsonl
 release-artifacts/
 build/*.iso*
 build/live_workspace/

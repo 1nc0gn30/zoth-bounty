@@ -1,7 +1,7 @@
 {
   "updatedAt": "2026-10-21T06:45:38.239Z",
   "channels": {
-    "thunderbirdInbox": "business@nullai.tech (Titan IMAP / Thunderbird hjl6lky3.default-release)",
+    "thunderbirdInbox": "business@nullai.tech (Titan IMAP / Thunderbird)",
     "outboundVerified": "1nc0gn30@outreach.nullai.tech / contact@nullai.tech (Resend DKIM/SPF)",
     "gmailAccount": "1nc0gn30solutions@gmail.com",
     "githubAccount": "1nc0gn30 (GitHub Private Vulnerability Reporting / GHSA)"

@@ -13,14 +13,15 @@ const { execSync } = require('child_process');
 const { syncAllDocs } = require('./sync_docs');
 
 const PORT = Number(process.env.PORT || 9494);
+const HOST = process.env.HOST || '127.0.0.1';
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, 'data');
 const PUBLIC_DIR = path.join(ROOT, 'public');
 const BOUNTIES_FILE = path.join(DATA_DIR, 'bounties.json');
 const COMMS_FILE = path.join(DATA_DIR, 'communications.json');
-const REPOS_DIR = '/opt/bounty-hunter/repos';
-const TB_DB = '/opt/.config/thunderbird/hjl6lky3.default-release/global-messages-db.sqlite';
-const HEXSTRIKE_TOOLS_JSON = '/opt/NullAI-HexStrike-AI-Terminal/ui/src/data/tools.json';
+const REPOS_DIR = process.env.ZOTH_BOUNTY_REPOS_DIR || '/opt/bounty-hunter/repos';
+const TB_DB = process.env.ZOTH_BOUNTY_TB_DB || '';
+const HEXSTRIKE_TOOLS_JSON = process.env.HEXSTRIKE_TOOLS_JSON || '/opt/NullAI-HexStrike-AI-Terminal/ui/src/data/tools.json';
 
 function readJson(filePath, fallback) {
   try {
@@ -195,8 +196,7 @@ const server = http.createServer(async (req, res) => {
       total_findings: (bounties.items || []).length,
       pricing: '100% Free & Open-Access',
       support: {
-        stripe: 'https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X',
-        solana: 'GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK'
+        stripe: 'https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X'
       }
     });
   }
@@ -303,6 +303,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 syncAllDocs();
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Zoth Bounty server listening on http://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+  console.log(`Zoth Bounty server listening on http://${HOST}:${PORT}`);
 });
