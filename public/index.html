@@ -678,8 +678,19 @@
     }
 
     async function loadState() {
-      const res = await fetch('/api/state');
-      STATE = await res.json();
+      let res;
+      try {
+        res = await fetch('/api/state');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        STATE = await res.json();
+      } catch (e) {
+        // API offline: keep the last good state and surface it instead of
+        // throwing an uncaught rejection on page load.
+        console.warn('zoth-bounty API offline:', e.message);
+        const el = document.getElementById('thermalStatus');
+        if (el) el.textContent = 'API OFFLINE — start the bounty daemon';
+        return;
+      }
       render();
     }
 
