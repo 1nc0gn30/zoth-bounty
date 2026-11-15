@@ -430,12 +430,85 @@
       if (btn) btn.textContent = next === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode';
     }
   </script>
+<!-- SEO/AEO alchemist · Hermes 24h parity mission -->
+  <!-- OpenGraph & Twitter Cards -->
+  <meta property="og:title" content="Zoth Bounty Research Hub" />
+  <meta property="og:description" content="Local security research, responsible vulnerability disclosure, and audit triage workstation (`127.0.0.1:9494`). Enforces a strict zero-false-positive gate across four lifecycle buckets…" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://zoth.nullai.tech/tools/zoth-bounty" />
+  <meta property="og:image" content="https://zoth.nullai.tech/og-zoth.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@1nc0gn30" />
+  <meta name="twitter:creator" content="@1nc0gn30" />
+  <meta name="twitter:title" content="Zoth Bounty Research Hub" />
+  <meta name="twitter:description" content="Local security research, responsible vulnerability disclosure, and audit triage workstation (`127.0.0.1:9494`). Enforces a strict zero-false-positive gate across four lifecycle buckets…" />
+  <meta name="twitter:image" content="https://zoth.nullai.tech/og-zoth.png" />
+  <!-- Schema.org Graph (SoftwareApplication + FAQPage) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": [
+          "WebApplication",
+          "SoftwareApplication"
+        ],
+        "name": "Zoth Bounty Research Hub",
+        "url": "https://zoth.nullai.tech/tools/zoth-bounty",
+        "applicationCategory": "Security & Enclave",
+        "operatingSystem": "Linux, ZothOS, Web",
+        "softwareVersion": "1.0.0",
+        "description": "Local security research, responsible vulnerability disclosure, and audit triage workstation (127.0.0.1:9494) enforcing a strict zero-false-positive gate.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "creator": {
+          "@type": "Organization",
+          "name": "Neal Frazier Tech (@1nc0gn30) • NullAI Platform",
+          "url": "https://nullai.tech"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Zoth Bounty Research Hub?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Zoth Bounty Research Hub is a local-first security research and responsible disclosure triage workstation from the NullAI / ZothOS sovereign arsenal."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do I run Zoth Bounty Research Hub locally?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "It then serves on http://127.0.0.1:9494 (assigned local port 9494). It also ships as a Zoth Studio route at https://zoth.nullai.tech/tools/zoth-bounty."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Zoth Bounty Research Hub free, or is there a paywall?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "100% Free & Open-Access — no paywall, no blur-lock, no trial gate. Optional support is accepted via Buy Us a Coffee on Stripe (https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X) and the Solana tip address GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
-<div id="zoth-coffee-support-bar" style="background: linear-gradient(90deg, rgba(16,185,129,0.12), rgba(212,175,55,0.14)); border-bottom: 1px solid rgba(212,175,55,0.35); padding: 8px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; z-index: 9999;">
-  <span style="color: #10B981; font-weight: 800;">✦ 100% FREE &amp; OPEN ACCESS · ZERO PAYWALLS</span>
+<div id="zoth-coffee-support-bar" style="background: linear-gradient(90deg, rgba(16,185,129,0.14), rgba(212,175,55,0.16)); border-bottom: 1px solid rgba(212,175,55,0.35); padding: 8px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; z-index: 9999;">
+  <span style="background: #065F46; color: #FFFFFF; padding: 4px 10px; border-radius: 6px; font-weight: 800;">✦ 100% FREE &amp; OPEN ACCESS · ZERO PAYWALLS</span>
   <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="background: #D4AF37; color: #08080B; padding: 4px 12px; border-radius: 6px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">☕ Buy Us a Coffee (Stripe)</a>
+  <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText('GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK');this.textContent='✓ Copied: GG2eQbVh...dXoK';" title="Solana Tip Address: GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK" style="background: #047857; color: #FFFFFF; border: 1px solid #10B981; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-family: inherit; font-size: 11px; cursor: pointer;">◎ Solana Tip: GG2eQbVh...dXoK</button>
 </div>
 
   <header>
@@ -538,6 +611,16 @@
         </div>
       </div>
     </div>
+
+    <footer style="margin-top: 24px; padding: 14px 18px; border: 1px solid rgba(212,175,55,0.28); border-radius: 10px; background: rgba(10,12,18,0.92); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 11px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;">
+      <span>Engineered by <strong style="color: var(--text);">Neal Frazier Tech (@1nc0gn30) • NullAI Platform</strong> · 100% Open-Access Utility</span>
+      <span style="display: inline-flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+        <a href="https://github.com/1nc0gn30/zoth-bounty" target="_blank" rel="noopener noreferrer" style="color: #D4AF37; text-decoration: none;">GitHub (zoth-bounty)</a>
+        <a href="https://nullai.tech" target="_blank" rel="noopener noreferrer" style="color: #38BDF8; text-decoration: none;">NullAI Platform</a>
+        <a href="https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X" target="_blank" rel="noopener noreferrer" style="color: #D4AF37; text-decoration: none;">☕ Buy Us a Coffee</a>
+        <span>Solana: <code style="color: #10B981;">GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK</code></span>
+      </span>
+    </footer>
   </div>
 
   <!-- Add Finding Modal -->
