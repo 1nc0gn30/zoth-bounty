@@ -211,11 +211,13 @@ ${c.summary}
     '',
     '## Support',
     '',
-    'Zoth Bounty is 100% free and open-source with zero paywalls. Optional support: [Buy Us a Coffee via Stripe](https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X).',
+    'Zoth Bounty is 100% free and open-source with zero paywalls. Optional support:',
+    '- [Buy Us a Coffee via Stripe](https://buy.stripe.com/3cIfZg27PdKo2D64Ocfw40X)',
+    '- **Solana Tip Address**: `GG2eQbVh8ut1BK6j1A2tz7pSySdLpD38BgyEhGcxdXoK`',
     '',
     '## License',
     '',
-    'Released under the [MIT License](LICENSE). Engineered by [1nc0gn30](https://1nc0gn30.si) (`@1nc0gn30`) and [NullAI](https://nullai.tech).',
+    'Released under the [MIT License](LICENSE). Engineered by **Neal Frazier Tech (@1nc0gn30) • NullAI Platform** · [GitHub (zoth-bounty)](https://github.com/1nc0gn30/zoth-bounty) · [NullAI Platform](https://nullai.tech).',
     ''
   ];
   fs.writeFileSync(path.join(ROOT, 'README.md'), lines.join('\n'));
